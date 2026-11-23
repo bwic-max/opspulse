@@ -1,0 +1,22 @@
+# Run on a server with: docker compose up -d
+services:
+  opspulse:
+    build: .
+    restart: unless-stopped
+    environment:
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+    volumes:
+      - opspulse-data:/data
+    expose: ["3000"]
+  caddy:            # gives you free HTTPS automatically
+    image: caddy:2
+    restart: unless-stopped
+    ports: ["80:80", "443:443"]
+    environment:
+      DOMAIN: ${DOMAIN:?set DOMAIN in .env}
+    command: caddy reverse-proxy --from ${DOMAIN} --to opspulse:3000
+    volumes:
+      - caddy-data:/data
+volumes:
+  opspulse-data:
+  caddy-data:

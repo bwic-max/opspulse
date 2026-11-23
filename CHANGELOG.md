@@ -2,6 +2,12 @@
 
 Each update raises the version number. The version is shown at the bottom of the sign-in screen and the Dashboard. To release an update: change `APP_VERSION` and `APP_DATE` at the top of the script in `pages/index.html`, add a line here, and upload the file.
 
+## 1.4.0 (23 Nov 2026)
+- Editable sales: tap a sale in the Reports sales log, then Edit sale. Change quantities, remove items or add items. Stock and totals update automatically, and edits that need more stock than available are blocked with a message.
+- Edited sales show an "Edited" badge, the edit time, who edited and the original total.
+- Item units: each item has a unit type (pcs, pack, box, ml, L, g, kg, bottle, bag or custom) and an optional unit size. Names show as "Cooking Oil (500 ml)" or "Tissue (12 pcs / pack)" across inventory, low-stock alerts, Quick Sale, receipts, reports, Data Entry and photo scan. Stock reads "3 packs".
+- Sample data now uses a store with realistic units. Clear items & sales, then Load sample data to see it.
+
 ## 1.3.0 (23 Nov 2026)
 - App renamed from OpsPulse to Store Yah!
 - Refreshing or reopening the app no longer signs you out. You stay signed in on that phone for 30 days, or until you tap Sign out.

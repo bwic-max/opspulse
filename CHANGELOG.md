@@ -1,6 +1,10 @@
-# OpsPulse changelog
+# Store Yah! changelog
 
 Each update raises the version number. The version is shown at the bottom of the sign-in screen and the Dashboard. To release an update: change `APP_VERSION` and `APP_DATE` at the top of the script in `pages/index.html`, add a line here, and upload the file.
+
+## 1.3.0 (23 Nov 2026)
+- App renamed from OpsPulse to Store Yah!
+- Refreshing or reopening the app no longer signs you out. You stay signed in on that phone for 30 days, or until you tap Sign out.
 
 ## 1.2.1 (23 Nov 2026)
 - Photo scan accepts the new Gemini keys that start with AQ. (and older ones starting with AIza).

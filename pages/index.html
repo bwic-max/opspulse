@@ -114,7 +114,7 @@ ${a?`<button class="card" style="width:100%;text-align:left;min-height:0;font-we
 <button class="card" data-a="go" data-v="inv:out"><div class="mut">Out of stock</div><div class="big">${ou}</div><div class="mut">items at zero</div></button>
 ${a?`<button class="card" data-a="go" data-v="report"><div class="mut">Sales this week</div><div class="big" style="font-size:28px">${money(sumSales(t0-6*DAY,t0+DAY))}</div><div class="mut">Open reports</div></button><div class="card"><div class="mut">Profit today (est.)</div><div class="big" style="font-size:28px">${money(profit(S.sales.filter(s=>!s.void&&s.ts>=t0)))}</div><div class="mut">sales minus item cost</div></div>`:''}</div>
 <h2>Recent activity</h2><div class="feed">${S.log.slice(0,8).map(l=>`<div>${esc(l.t)}<div class="mut" style="padding:0">${tm(l.ts)}</div></div>`).join('')||'<div class="mut">Nothing yet. Log your first sale.</div>'}</div>
-${a?`<h2>Admin</h2><div class="row wrap"><button class="pri" data-a="team">Manage team</button>${S.products.length||S.sales.length?'<button data-a="clear">Clear items &amp; sales</button>':'<button data-a="sample">Load sample data</button>'}</div>`:''}`}
+${a?`<h2>Admin</h2><div class="row wrap"><button class="pri" data-a="team">Manage team</button><button data-a="key">Photo scan key</button>${S.products.length||S.sales.length?'<button data-a="clear">Clear items &amp; sales</button>':'<button data-a="sample">Load sample data</button>'}</div>`:''}`}
 
 function invList(){const L=S.products.filter(p=>(U.inv=='all'||(U.inv=='low'?stat(p)=='low':stat(p)=='out'))&&(U.cat=='All'||p.cat==U.cat)&&(p.name+p.sku).toLowerCase().includes(U.invQ.toLowerCase()));
 return L.map(p=>`<div class="card row sp"><div><h3>${esc(p.name)}</h3><div class="mut">${esc(p.sku)} ${p.sku?'· ':''}${esc(p.cat)}</div><div style="margin-top:6px"><span class="big" style="font-size:30px">${p.stock}</span> <span class="mut">in stock, reorder at ${p.reorder}</span></div></div>${pTag(p)}</div>`).join('')||'<div class="card mut">No products match.</div>'}
@@ -167,7 +167,7 @@ function teamSheet(){const m=ME();sheet(`<h2 style="margin-top:0">Manage team</h
 <h3>Add a person</h3>${fld('Name','u-n')}<div class="two"><div>${fld('PIN (4 to 8 digits)','u-p','','password')}</div><div><label class="f" for="u-r">Access</label><select id="u-r"><option value="staff">Staff</option><option value="admin">Admin</option></select></div></div><button class="pri" style="width:100%;margin-top:12px" data-a="u-add">Add person</button>
 <h3 style="margin-top:22px">Change my PIN</h3>${fld('New PIN','u-m','','password')}<button style="width:100%;margin-top:12px" data-a="u-pin">Save my PIN</button><div class="mut" style="margin-top:14px">PINs keep casual users out on a shared device. Data is stored in this browser, so it is not bank-level security.</div>`)}
 
-const ADM=['void','p-save','p-del','editp','team','u-add','u-del','u-pin','sample','clear','clear-go'];
+const ADM=['void','p-save','p-del','editp','team','u-add','u-del','u-pin','sample','clear','clear-go','key','key-save','key-clear'];
 document.addEventListener('click',async e=>{if(e.target.id=='sheet')return close();const t=e.target.closest('[data-a]');if(!t||t.tagName=='SELECT')return;const d=t.dataset,id=+d.id;
 if(ADM.includes(d.a)&&!admin())return toast('Only admins can do that');
 switch(d.a){
@@ -199,6 +199,9 @@ if(p){p.stock=set?q:p.stock+q;if(admin()&&c!=='')p.cost=+c;put('products',p);log
 else{if(!admin())return toast('Please choose an item');const n=$('#sc-n').value.trim();if(!n)return toast('Please name the new item');put('products',{id:nextId(S.products),name:n,sku:'',cat:'General',cost:+c||0,price:+$('#sc-pr').value||0,stock:q,reorder:5});log('Added '+n+' with '+q+' in stock'+cn+' (photo scan)','stock');toast('Added '+n+'. Tap Edit to finish its details.')}
 close();render();break}
 case'team':teamSheet();break;
+case'key':{const has=!!localStorage.getItem('opspulse-key');sheet(`<h2 style="margin-top:0">Photo scan key</h2><div class="mut">Paste your Anthropic API key. It is saved on this phone only and is used to recognize photos. Use a key made just for this app and set a low monthly spending limit in your Anthropic account. Anyone who can open this app on this phone can use the key.</div>${fld('API key','k-v','','password')}<button class="pri" style="width:100%;margin-top:14px" data-a="key-save">Save key</button>${has?'<button class="dng" style="width:100%;margin-top:8px" data-a="key-clear">Remove key</button>':''}`);break}
+case'key-save':{const v=$('#k-v').value.trim();if(!/^sk-ant-/.test(v))return toast('That doesn’t look like an Anthropic key');try{localStorage.setItem('opspulse-key',v)}catch(e){return toast('Couldn’t save the key')}close();toast('Key saved');break}
+case'key-clear':try{localStorage.removeItem('opspulse-key')}catch(e){}close();toast('Key removed');break;
 case'u-add':{const n=$('#u-n').value.trim(),p=$('#u-p').value;if(!n)return toast('Please enter a name');if(!/^\d{4,8}$/.test(p))return toast('PIN must be 4 to 8 digits');const uid=nextId(S.users);put('users',{id:uid,name:n,role:$('#u-r').value,pin:await hp(uid,p)});log(n+' added to the team','stock');teamSheet();toast(n+' added');break}
 case'u-del':rm('users',id);teamSheet();break;
 case'u-pin':{const p=$('#u-m').value;if(!/^\d{4,8}$/.test(p))return toast('PIN must be 4 to 8 digits');const m=ME();m.pin=await hp(m.id,p);put('users',m);close();toast('PIN changed');break}
@@ -221,11 +224,14 @@ document.addEventListener('change',async e=>{const t=e.target;
 if(t.dataset.a=='sc-pick'){SC.qty=+$('#sc-q').value||1;SC.pid=+t.value;scanSheet()}
 if(t.id!='cam')return;const f=t.files[0];t.value='';if(!f)return;
 sheet('<h2 style="margin-top:0">Looking at your photo…</h2><div class="mut">Matching it to your items. This takes a few seconds.</div>');SC={url:'',qty:1,mode:'add',pid:0,name:''};
-try{const{blob,url}=await shrink(f);SC.url=url;const sm=await claude.use('sample');if(!sm)throw{code:'na'};const lim=await sm.limits();if(!lim.images)throw{code:'na'};
+try{const KV=localStorage.getItem('opspulse-key')||'';if(!KV)throw new Error('Photo recognition needs an API key. An admin can add it on the Dashboard under Photo scan key.');
+const{blob,url}=await shrink(f);SC.url=url;const b64=await new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(String(fr.result).split(',')[1]);fr.onerror=rej;fr.readAsDataURL(blob)});
 const list=S.products.map(p=>p.id+': '+p.name+' ('+p.cat+')').join('\n');
-const r=await sm.json('You identify inventory items from photos for a small business. Their products:\n'+list+'\n\nLook at the photo and reply with only JSON: {"id": <id of the matching product, or null if none fit>, "name": "<short name of the item you see>", "confidence": "high" | "medium" | "low"}.',{images:[blob],modelTier:'quick'});
-SC.pid=r&&r.id&&P(r.id)?r.id:0;SC.name=(r&&r.name)||'';SC.conf=r&&r.confidence;scanSheet()}
-catch(err){sheet(`<h2 style="margin-top:0">Couldn’t read that photo</h2><div class="mut">${err.code=='not_granted'?'Photo recognition was not allowed, so choose the item yourself.':'Photo recognition isn’t available right now. You can still choose the item yourself.'}</div><button class="pri" style="width:100%;margin-top:16px" data-a="sc-manual">Choose item</button>`)}});
+const rs=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'x-api-key':KV,'anthropic-version':'2023-06-01','content-type':'application/json','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-5-5',max_tokens:200,messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:b64}},{type:'text',text:'You identify inventory items from photos for a small business. Their products:\n'+list+'\n\nLook at the photo and reply with only JSON: {"id": <id of the matching product, or null if none fit>, "name": "<short name of the item you see>", "confidence": "high" | "medium" | "low"}.'}]}]})});
+if(!rs.ok)throw new Error(rs.status==401?'The API key was not accepted. An admin can fix it on the Dashboard.':'Photo recognition failed ('+rs.status+').');
+const jr=await rs.json(),tx=(jr.content||[]).map(c=>c.text||'').join(''),mm=/\{[\s\S]*\}/.exec(tx);let r={};try{r=JSON.parse(mm?mm[0]:'{}')}catch(e){}
+SC.pid=r.id&&P(r.id)?r.id:0;SC.name=r.name||'';SC.conf=r.confidence;scanSheet()}
+catch(err){sheet(`<h2 style="margin-top:0">Couldn’t read that photo</h2><div class="mut">${esc(err.message||'Photo recognition isn’t available right now.')} You can still choose the item yourself.</div><button class="pri" style="width:100%;margin-top:16px" data-a="sc-manual">Choose item</button>`)}});
 document.addEventListener('input',e=>{const q=e.target.dataset.q;if(!q)return;const v=e.target.value;
 if(q=='inv'){U.invQ=v;$('#invList').innerHTML=invList()}else if(q=='sales'){U.sq=v;$('#salesList').innerHTML=salesList()}else{U[q]=v;render();const el=document.querySelector('[data-q='+q+']');el&&el.focus()}});
 document.addEventListener('keydown',e=>{if(e.key=='Escape')close();if(e.key=='Enter'&&e.target.id=='pin')document.querySelector('[data-a=signin]').click()});

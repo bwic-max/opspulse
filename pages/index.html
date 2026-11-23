@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>OpsPulse</title>
-<link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0E6B5C"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="OpsPulse">
+<title>Store Yah!</title>
+<link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0E6B5C"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Store Yah!">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#EDF1F0;--card:#fff;--ink:#0F2A2B;--mut:#5B7170;--line:#D9E2E0;--acc:#0E6B5C;--accfg:#fff;--okb:#DDF3E4;--okf:#17663F;--wb:#FDF0D5;--wf:#8A4A06;--bb:#FDE4E1;--bf:#B42318;--ib:#E1ECF9;--if:#1D4E89;--nb:#E7ECEB;--nf:#44595A;
@@ -66,7 +66,7 @@ const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"]/g,c=>(
 const money=n=>'₱'+(+n).toLocaleString('en-PH',{minimumFractionDigits:n%1?2:0,maximumFractionDigits:2});
 const DAY=864e5,sod=t=>{const d=new Date(t);d.setHours(0,0,0,0);return +d};
 const tm=t=>{const d=new Date(t),n=sod(Date.now());return (sod(t)==n?'Today':sod(t)==n-DAY?'Yesterday':d.toLocaleDateString(undefined,{month:'short',day:'numeric'}))+', '+d.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})};
-const APP_VERSION='1.2.1',APP_DATE='23 Nov 2026';
+const APP_VERSION='1.3.0',APP_DATE='23 Nov 2026';
 const KEY='opspulse-v3';
 function seed(){let r=7;const rnd=()=>(r=(r*9301+49297)%233280)/233280;
 const P=[[1,'House Blend 1kg','HB-01','Coffee',9,22,24,8],[2,'Espresso Beans 1kg','EB-02','Coffee',11,26,5,8],[3,'Cold Brew Bottle','CB-03','Drinks',2.5,6,18,10],[4,'Oat Milk 1L','OM-04','Dairy-free',1.6,3.5,0,12],[5,'Paper Cups (50)','PC-05','Supplies',4,9,6,6],[6,'Ceramic Mug','CM-06','Merch',5,14,15,5],[7,'Vanilla Syrup','VS-07','Supplies',3.2,8,3,4],[8,'Almond Croissant','AC-08','Bakery',1.4,4.25,30,12],[9,'Pastry Box (6)','PB-09','Bakery',6,15,9,5],[10,'Gift Card ₱1,000','GC-10','Merch',0,25,40,5]].map(a=>({id:a[0],name:a[1],sku:a[2],cat:a[3],cost:a[4]*40,price:a[5]*40,stock:a[6],reorder:a[7]}));
@@ -102,7 +102,7 @@ function sheet(h){$('#sbody').innerHTML=h;$('#sheet').classList.add('open')}
 function close(){$('#sheet').classList.remove('open')}
 
 function login(){const u=S.users.find(x=>x.id==U.pick);
-return `<div style="padding-top:28px"><h1>OpsPulse</h1><div class="mut" style="margin:4px 0 20px">Who’s using the app?</div>${u?`<div class="card"><div class="row sp"><h3>${esc(u.name)}</h3>${rTag(u)}</div><label class="f" for="pin">Enter your PIN</label><input id="pin" type="password" inputmode="numeric" autocomplete="off"><button class="pri" style="width:100%;margin-top:14px" data-a="signin">Sign in</button><button style="width:100%;margin-top:8px" data-a="pick" data-id="0">Back</button></div>`:S.users.map(x=>`<button class="card" style="width:100%;text-align:left;font-weight:500" data-a="pick" data-id="${x.id}"><div class="row sp"><h3>${esc(x.name)}</h3>${rTag(x)}</div></button>`).join('')}</div>`}
+return `<div style="padding-top:28px"><h1>Store Yah!</h1><div class="mut" style="margin:4px 0 20px">Who’s using the app?</div>${u?`<div class="card"><div class="row sp"><h3>${esc(u.name)}</h3>${rTag(u)}</div><label class="f" for="pin">Enter your PIN</label><input id="pin" type="password" inputmode="numeric" autocomplete="off"><button class="pri" style="width:100%;margin-top:14px" data-a="signin">Sign in</button><button style="width:100%;margin-top:8px" data-a="pick" data-id="0">Back</button></div>`:S.users.map(x=>`<button class="card" style="width:100%;text-align:left;font-weight:500" data-a="pick" data-id="${x.id}"><div class="row sp"><h3>${esc(x.name)}</h3>${rTag(x)}</div></button>`).join('')}</div>`}
 
 function dash(){const a=admin(),m=ME(),t0=sod(Date.now()),today=sumSales(t0,t0+DAY),yest=sumSales(t0-DAY,t0),avg=sumSales(t0-7*DAY,t0)/7,pc=yest?Math.round((today-yest)/yest*100):0;
 const L=lowItems(),lo=L.filter(p=>stat(p)=='low').length,ou=L.length-lo,mine=S.sales.filter(s=>!s.void&&s.ts>=t0&&s.by==m.name),al=[];
@@ -147,11 +147,12 @@ ${U.rng=='custom'?`<div class="two" style="margin-bottom:12px"><div><label class
 <div class="card"><h3>Top sellers</h3>${rows(top,'sold')}</div><div class="card"><h3>By payment method</h3>${rows(pay,'sales')}</div><div class="card"><h3>By team member</h3>${rows(by,'sales')}</div>
 <h2>Sales log</h2><input data-q="sales" placeholder="Search sales" value="${esc(U.sq)}" aria-label="Search sales" style="margin-bottom:12px"><div id="salesList">${salesList()}</div>`}
 
-function setup(){return `<div style="padding-top:28px"><h1>Welcome to OpsPulse</h1><div class="mut" style="margin:4px 0 16px">Create the owner account. You’ll sign in with this PIN as admin.</div><div class="card">${fld('Your name','s-n')}${fld('PIN (4 to 8 digits)','s-p','','password')}<button class="pri" style="width:100%;margin-top:14px" data-a="setup-go">Create owner account</button></div></div>`}
+function setup(){return `<div style="padding-top:28px"><h1>Welcome to Store Yah!</h1><div class="mut" style="margin:4px 0 16px">Create the owner account. You’ll sign in with this PIN as admin.</div><div class="card">${fld('Your name','s-n')}${fld('PIN (4 to 8 digits)','s-p','','password')}<button class="pri" style="width:100%;margin-top:14px" data-a="setup-go">Create owner account</button></div></div>`}
 function render(){if(!READY){$('#app').innerHTML='<div class="card mut" style="margin-top:40px">Loading your shop data…</div>';$('#navw').style.display='none';$('#fab').style.display='none';return}
-if(U.me&&!ME())U.me=0;const on=!!U.me,a=admin();$('#navw').style.display=on?'':'none';
+if(U.me&&!ME())U.me=0;const on=!!U.me,a=admin();
+try{if(U.me){if(!localStorage.getItem('opspulse-session'))localStorage.setItem('opspulse-session',JSON.stringify({id:U.me,t:Date.now()}))}else localStorage.removeItem('opspulse-session')}catch(e){}$('#navw').style.display=on?'':'none';
 $('#app').innerHTML=on?{dash,inv,entry,report}[U.view]():(S.users.length?login():setup());
-$('#app').insertAdjacentHTML('beforeend',`<div class="mut" style="text-align:center;margin-top:28px">OpsPulse v${APP_VERSION} · ${APP_DATE}</div>`);
+$('#app').insertAdjacentHTML('beforeend',`<div class="mut" style="text-align:center;margin-top:28px">Store Yah! v${APP_VERSION} · ${APP_DATE}</div>`);
 const N=[['dash','Dashboard'],['inv','Inventory'],...(a?[['report','Reports']]:[]),['entry','Data Entry']];
 $('#nav').innerHTML=N.map(n=>`<button class="${U.view==n[0]?'on':''}" data-a="go" data-v="${n[0]}"><svg viewBox="0 0 24 24">${ic[n[0]]}</svg>${n[1]}</button>`).join('');$('#fab').style.display=on&&(U.view=='dash'||U.view=='report')?'':'none';save()}
 
@@ -244,11 +245,12 @@ if(d){try{await Promise.all(['products','sales','users'].map(c=>new Promise((res
 d.collection(c).onSnapshot(sn=>{S[c]=sn.docs.map(x=>x.data());if(c=='sales')S.sales.sort((x,y)=>y.ts-x.ts);if(first){first=0;clearTimeout(to);res()}else refresh()},er=>{clearTimeout(to);rej(er)})})));
 DBX=d;d.collection('log').orderBy('ts','desc').limit(30).onSnapshot(sn=>{S.log=sn.docs.map(x=>x.data());refresh()},()=>{})}catch(e){DBX=null}}
 if(!DBX){LOCAL=true;try{const l=JSON.parse(localStorage.getItem(KEY));if(l&&l.users)S=l}catch(e){}}
+try{const ss=JSON.parse(localStorage.getItem('opspulse-session')||'null');if(ss&&S.users.some(u=>u.id==ss.id)&&Date.now()-ss.t<30*864e5)U.me=ss.id;else localStorage.removeItem('opspulse-session')}catch(e){}
 READY=true;render()}
 boot();
 /* installer: install prompt + offline cache */
 let IP=null;const inst=$('#inst'),standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone;
-window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();IP=e;if(!standalone){inst.innerHTML='<div class="card ok" style="margin:0;display:flex;gap:10px;align-items:center;justify-content:space-between"><b>Install OpsPulse on this phone</b><button class="pri sm" id="instb">Install</button></div>';inst.style.display='block';$('#instb').onclick=async()=>{IP.prompt();await IP.userChoice;inst.style.display='none'}}});
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();IP=e;if(!standalone){inst.innerHTML='<div class="card ok" style="margin:0;display:flex;gap:10px;align-items:center;justify-content:space-between"><b>Install Store Yah! on this phone</b><button class="pri sm" id="instb">Install</button></div>';inst.style.display='block';$('#instb').onclick=async()=>{IP.prompt();await IP.userChoice;inst.style.display='none'}}});
 window.addEventListener('appinstalled',()=>inst.style.display='none');
 if(!standalone&&/iphone|ipad/i.test(navigator.userAgent)){inst.innerHTML='<div class="card ok" style="margin:0"><b>Install on iPhone:</b> tap Share, then Add to Home Screen.</div>';inst.style.display='block'}
 if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol))addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));

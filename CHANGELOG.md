@@ -2,6 +2,13 @@
 
 Each update raises the version number. The version is shown at the bottom of the sign-in screen and the Dashboard. To release an update: change `APP_VERSION` and `APP_DATE` at the top of the script in `pages/index.html`, add a line here, and upload the file.
 
+## 1.8.0 (24 Nov 2026)
+- Data Entry opens clean. Two large buttons, + Add Stock by Hand and View / Manage Items, expand their sections on tap and collapse again on a second tap or Cancel / Close. The stock confirmation before saving is unchanged.
+- Log Sale now starts with a search box. Typing filters items instantly by name, size or unit (for example 500 ml or pack), SKU and category, ignoring capitals.
+- Tap a result to add it to the sale. Pack items show + Per Pack and + Per Piece buttons. Results show the selling price and what is left in stock.
+- The full item list is hidden until you type or tap Browse All Items. No match shows a friendly message.
+- A new In this sale list lets you change quantities or remove lines before saving.
+
 ## 1.7.0 (24 Nov 2026)
 - Sell by Pack & Piece: new "Sold by Pack & Piece" option when adding or editing an item. Enter pieces per pack, price per pack, price per piece, and starting stock as packs and loose pieces.
 - Stock for these items is stored in total pieces, so there are no rounding errors. Inventory cards show it as packs and pieces, for example "9 packs, 17 pcs" with "197 pcs total".

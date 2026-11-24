@@ -80,6 +80,15 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 @media(min-width:900px){#top .in{max-width:720px}}
 @media(prefers-reduced-motion:reduce){.dp,.dbk,.sw i,.sw i:after{transition:none}}
 .mi svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.xp{display:grid;grid-template-rows:0fr;transition:grid-template-rows .25s ease}.xp.open{grid-template-rows:1fr}
+.xp>div{overflow:hidden;min-height:0;visibility:hidden;transition:visibility 0s .25s}.xp.open>div{visibility:visible;transition:none}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.grid2.one{grid-template-columns:1fr}
+.act{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:4px;text-align:left;padding:14px 16px;min-height:88px;background:var(--card);border:2px solid var(--line);border-radius:18px;font-weight:500}
+.act b{font-size:17px}.act.on{border-color:var(--acc)}
+.sticky{position:sticky;top:-20px;margin:-20px -16px 8px;padding:20px 16px 8px;background:var(--bg);z-index:3}
+.sbox{position:relative}.sbox input{padding-right:52px}.sbox button{position:absolute;right:0;top:0;width:48px;padding:0;background:none;font-size:26px}
+button[disabled]{opacity:.45;cursor:not-allowed}
+@media(prefers-reduced-motion:reduce){.xp{transition:none}}
 </style></head><body>
 <header id="top" style="display:none"><div class="in"><button id="menuBtn" data-a="menu" aria-label="Open menu"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><div id="ttl"></div></div></header>
 <div id="drawer"><div class="dbk" data-a="menu-close"></div><aside class="dp" id="dpanel" role="dialog" aria-label="Menu"></aside></div>
@@ -95,7 +104,7 @@ const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"]/g,c=>(
 let CURSYM='₱';const money=n=>CURSYM+(+n).toLocaleString('en-PH',{minimumFractionDigits:n%1?2:0,maximumFractionDigits:2});
 const DAY=864e5,sod=t=>{const d=new Date(t);d.setHours(0,0,0,0);return +d};
 const tm=t=>{const d=new Date(t),n=sod(Date.now());return (sod(t)==n?'Today':sod(t)==n-DAY?'Yesterday':d.toLocaleDateString(undefined,{month:'short',day:'numeric'}))+', '+d.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})};
-const APP_VERSION='1.7.0',APP_DATE='24 Nov 2026';
+const APP_VERSION='1.8.0',APP_DATE='24 Nov 2026';
 const KEY='opspulse-v3';
 function seed(){let r=7;const rnd=()=>(r=(r*9301+49297)%233280)/233280;
 const P=[['Cooking Oil','CO-01','Pantry','ml',500,62,75,24,8],['Tissue','TI-02','Household','pack',12,4.5833,7,36,6,{packed:true,ppp:12,packPrice:70,piecePrice:7,costPack:55}],['Bottled Water','BW-03','Drinks','L',1.5,18,25,40,12],['Rice','RI-04','Pantry','kg',25,1150,1300,5,3],['Instant Noodles','IN-05','Pantry','pack',20,4.8,6,197,3,{packed:true,ppp:20,packPrice:100,piecePrice:6,costPack:96}],['Soy Sauce','SS-06','Pantry','ml',385,24,32,18,6],['Sugar','SU-07','Pantry','kg',1,68,80,15,8],['Eggs','EG-08','Fresh','tray',12,95,115,9,4],['Coffee 3-in-1','CF-09','Drinks','box',30,135,165,7,3],['Cola','CL-10','Drinks','L',1,40,55,0,6]].map((a,i)=>({id:i+1,name:a[0],sku:a[1],cat:a[2],unitType:a[3],unitSpec:a[4],cost:a[5],price:a[6],stock:a[7],reorder:a[8],...(a[9]||{})}));
@@ -108,7 +117,7 @@ return{demo:true,products:P,sales,users:[{id:1,name:'Owner',role:'admin',pin:'12
 log:[{ts:now-12*6e4,t:'Sale of '+money(1360)+' (GCash)',k:'sale'},{ts:now-3*36e5,t:'Espresso Beans 1kg +8 (stock in)',k:'stock'},{ts:now-5*36e5,t:'Oat Milk 1L stock set to 0',k:'stock'}]}}
 let S={products:[],sales:[],users:[],log:[]},DBX=null,READY=false,LOCAL=false;
 const save=()=>{if(!LOCAL)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
-const U={me:0,pick:0,view:'dash',inv:'all',invQ:'',cat:'All',rng:'today',sq:'',from:'',to:'',cart:{},sel:{},pay:'Cash'};
+const U={me:0,pick:0,view:'dash',inv:'all',invQ:'',cat:'All',rng:'today',sq:'',from:'',to:'',cart:{},sel:{},lsq:'',browse:false,eOpen:{},pay:'Cash'};
 const P=id=>S.products.find(p=>p.id==id),ME=()=>S.users.find(u=>u.id==U.me),admin=()=>ME()?.role=='admin';
 const nextId=a=>a.reduce((m,x)=>Math.max(m,x.id),0)+1,wait=ms=>new Promise(r=>setTimeout(r,ms));
 const dberr=e=>toast(e&&e.code=='invalid_argument'?'Couldn’t save. Ask the owner to give you Contributor access.':'Couldn’t save to the database. Check your connection and reload.');
@@ -142,7 +151,7 @@ const ic={clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',gear:'<
 const sumSales=(a,b)=>S.sales.filter(s=>!s.void&&s.ts>=a&&s.ts<b).reduce((x,s)=>x+s.total,0);
 const profit=L=>L.reduce((a,s)=>a+s.items.reduce((b,i)=>b+i.qty*i.price-ipc(i)*(P(i.pid)?.cost||0),0),0);
 const lowItems=()=>S.products.filter(p=>stat(p)!=='ok');
-function go(v,f){if(v=='report'&&!admin())v='dash';U.view=v;if(v=='inv')U.inv=f||'all';render();scrollTo(0,0)}
+function go(v,f){if(v=='entry')U.eOpen={};if(v=='report'&&!admin())v='dash';U.view=v;if(v=='inv')U.inv=f||'all';render();scrollTo(0,0)}
 function toast(m){const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(toast.h);toast.h=setTimeout(()=>t.style.display='none',2400)}
 function sheet(h){$('#sbody').innerHTML=h;$('#sheet').classList.add('open')}
 function close(){$('#sheet').classList.remove('open')}
@@ -173,15 +182,19 @@ return `<div class="row" style="margin-bottom:6px"><input data-q="inv" placehold
 <div class="chips">${[['all','All'],['low','Low Stock'],['out','Out of Stock']].map(c=>`<button class="chip ${U.inv==c[0]?'on':''}" data-a="invf" data-v="${c[0]}">${c[1]}</button>`).join('')}</div>
 <div class="chips">${cats.map(c=>`<button class="chip ${U.cat==c?'on':''}" data-a="catf" data-v="${esc(c)}">${esc(c)}</button>`).join('')}</div><div id="invList">${invList()}</div>`}
 
-function entry(){const a=admin();
-return `<div class="mut" style="margin:4px 0 14px">Record stock coming in. Photo scan finds the item for you.</div>
-<button class="pri" style="width:100%;min-height:60px;font-size:18px" data-a="scan">Scan item with camera</button>
-<div class="card" style="margin-top:14px"><h3>Add stock by hand</h3><label class="f" for="e-p">Item</label><select id="e-p">${S.products.map(p=>`<option value="${p.id}">${esc(label(p))} (${qtyText(p,p.stock)})</option>`).join('')}</select>
+const xp=(id,open,inner)=>`<div class="xp ${open?'open':''}" id="xp-${id}"><div>${inner}</div></div>`;
+function entry(){const a=admin(),o=U.eOpen||{};
+const stockForm=`<div class="card" style="margin-top:10px"><h3>Add stock by hand</h3><label class="f" for="e-p">Item</label><select id="e-p">${S.products.map(p=>`<option value="${p.id}">${esc(label(p))} (${qtyText(p,p.stock)})</option>`).join('')}</select>
 <div id="e-uw" style="display:${S.products[0]&&S.products[0].packed?'block':'none'}"><label class="f" for="e-u">Quantity is in</label><select id="e-u"><option value="pack">Packs</option><option value="piece">Loose pieces</option></select></div>
 ${a?'<label class="f" for="e-m">Entry type</label><select id="e-m"><option value="add">Add to stock (received)</option><option value="set">Set stock to (recount)</option></select>':''}
-<label class="f" for="e-q">Quantity</label><input id="e-q" type="number" inputmode="numeric" min="1" value="1">${fld(a?'Unit cost in ₱ (updates the item)':'Unit cost in ₱ (optional)','e-c','','number')}<button class="pri" style="width:100%;margin-top:14px" data-a="e-save">Save entry</button></div>
-${a?`<h2>Items</h2><button class="pri" style="width:100%" data-a="editp">+ Add new item</button><div style="margin-top:12px">${S.products.map(p=>`<div class="card row sp"><div><b>${esc(label(p))}</b><div class="mut">Sells ${money(p.price)}, cost ${money(p.cost)}</div></div><button class="sm" data-a="editp" data-id="${p.id}">Edit</button></div>`).join('')}</div>`:'<div class="mut">Admins can also add new items and change prices.</div>'}`}
-
+<label class="f" for="e-q">Quantity</label><input id="e-q" type="number" inputmode="numeric" min="1" value="1">${fld(a?'Unit cost in ₱ (updates the item; per pack for pack items)':'Unit cost in ₱ (optional)','e-c','','number')}
+<div class="row" style="margin-top:14px"><button style="flex:1" data-a="xp" data-v="stock">Cancel</button><button class="pri" style="flex:2" data-a="e-save">Save entry</button></div></div>`;
+const items=`<div style="margin-top:10px"><button class="pri" style="width:100%" data-a="editp">+ Add new item</button><div style="margin-top:12px">${S.products.map(p=>`<div class="card row sp"><div><b>${esc(label(p))}</b><div class="mut">${qtyText(p,p.stock)} in stock · ${p.packed?money(p.packPrice)+'/pack, '+money(p.piecePrice)+'/pc':money(p.price)} · cost ${money(p.cost)}</div></div><button class="sm" data-a="editp" data-id="${p.id}">Edit</button></div>`).join('')||'<div class="card mut">No items yet. Tap Add new item.</div>'}</div><button style="width:100%;margin-top:4px" data-a="xp" data-v="items">Close</button></div>`;
+return `<div class="mut" style="margin:2px 0 14px">Record stock coming in, or manage your items.</div>
+<div class="grid2${a?'':' one'}"><button class="act ${o.stock?'on':''}" data-a="xp" data-v="stock" aria-expanded="${!!o.stock}" aria-controls="xp-stock"><b>+ Add Stock by Hand</b><span class="mut">Type in a delivery</span></button>${a?`<button class="act ${o.items?'on':''}" data-a="xp" data-v="items" aria-expanded="${!!o.items}" aria-controls="xp-items"><b>View / Manage Items</b><span class="mut">Stock, units and edit</span></button>`:''}</div>
+${xp('stock',o.stock,stockForm)}${a?xp('items',o.items,items):''}
+<button class="pri" style="width:100%;min-height:60px;font-size:18px;margin-top:14px" data-a="scan">Scan item with camera</button>
+${a?'':'<div class="mut" style="margin-top:14px">Admins can also add new items and change prices.</div>'}`}
 function rangeOf(){const n=Date.now(),t=sod(n);if(U.rng=='today')return[t,t+DAY];if(U.rng=='week')return[t-6*DAY,t+DAY];if(U.rng=='month'){const d=new Date(t);d.setDate(1);return[+d,t+DAY]}return[U.from?sod(U.from+'T00:00'):0,U.to?sod(U.to+'T00:00')+DAY:t+DAY]}
 const sName=s=>s.items.map(i=>i.unit?i.qty+' '+(i.unit=='pack'?(i.qty==1?'pack':'packs'):(i.qty==1?'pc':'pcs'))+' '+label(P(i.pid)):i.qty+'× '+label(P(i.pid))).join(', ');
 function salesList(){const[a,b]=rangeOf();const L=S.sales.filter(s=>s.ts>=a&&s.ts<b&&(sName(s)+s.pay+s.id+(s.by||'')).toLowerCase().includes(U.sq.toLowerCase()));
@@ -212,14 +225,21 @@ const ckey=(pid,u)=>u?pid+':'+u:String(pid);
 function cartItems(){return Object.entries(U.cart).filter(x=>x[1]>0).map(([k,q])=>{const[pid,u]=k.split(':'),p=P(pid);return{pid:+pid,qty:q,price:u?(u=='pack'?p.packPrice:p.piecePrice):p.price,...(u?{unit:u}:{}),...(u=='pack'?{ppp:p.ppp}:{})}})}
 const cartTotal=()=>cartItems().reduce((a,i)=>a+i.qty*i.price,0);
 const cartPieces=(pid,except)=>Object.entries(U.cart).reduce((a,[k,q])=>{const[id,u]=k.split(':');return a+(id==pid&&k!=except?(u=='pack'?q*P(id).ppp:q):0)},0);
-function packedRow(p){const u=U.sel[p.id]||'pack',qp=U.cart[ckey(p.id,'pack')]||0,qc=U.cart[ckey(p.id,'piece')]||0,cur=u=='pack'?qp:qc,inc=[qp&&qp+' '+(qp==1?'pack':'packs'),qc&&qc+' '+(qc==1?'pc':'pcs')].filter(Boolean).join(' + ');
-return `<div class="pick" data-row="${p.id}" style="flex-wrap:wrap"><span><b>${esc(label(p))}</b><br><span class="mut">${money(p.packPrice)} / pack · ${money(p.piecePrice)} / pc · ${pw(p,p.stock)} left</span></span><div class="step"><button data-a="cart" data-id="${p.id}" data-d="-1" aria-label="Less">−</button><b id="q${p.id}">${cur}</b><button data-a="cart" data-id="${p.id}" data-d="1" aria-label="More">+</button></div>
-<div class="row" style="width:100%;gap:8px"><button class="chip ${u=='pack'?'on':''}" style="flex:1" data-a="usel" data-id="${p.id}" data-v="pack">Per Pack</button><button class="chip ${u=='piece'?'on':''}" style="flex:1" data-a="usel" data-id="${p.id}" data-v="piece">Per Piece</button></div>
-${inc?`<div class="mut" style="width:100%">In this sale: ${inc} = ${money(qp*p.packPrice+qc*p.piecePrice)}</div>`:''}</div>`}
-const plainRow=p=>`<div class="pick"><span><b>${esc(label(p))}</b><br><span class="mut">${money(p.price)} · ${qtyText(p,p.stock)} left</span></span><div class="step"><button data-a="cart" data-id="${p.id}" data-d="-1" aria-label="Less">−</button><b id="q${p.id}">${U.cart[p.id]||0}</b><button data-a="cart" data-id="${p.id}" data-d="1" aria-label="More">+</button></div></div>`;
-function refreshRow(id){const el=$('#sbody [data-row="'+id+'"]');if(el)el.outerHTML=packedRow(P(id))}
-function saleSheet(){const L=S.products.filter(p=>p.stock>0);
-sheet(`<h2 style="margin-top:0">Log a sale</h2>${L.map(p=>p.packed?packedRow(p):plainRow(p)).join('')||'<div class="mut">Nothing in stock to sell.</div>'}
+function lsMatches(q){const toks=q.toLowerCase().split(/\s+/).filter(Boolean);return S.products.filter(p=>{const h=(p.name+' '+uspec(p)+' '+(p.sku||'')+' '+(p.cat||'')+(p.packed?' pack piece pieces':'')).toLowerCase(),hc=h.replace(/\s+/g,'');return toks.every(t=>h.includes(t)||hc.includes(t))})}
+const rcard=p=>{const nm=esc(p.name)+(uspec(p)?' • '+esc(uspec(p)):''),left=p.stock>0?qtyText(p,p.stock)+' left':'Out of stock';
+if(p.packed)return `<div class="card" style="margin-bottom:8px"><b>${nm}</b><div class="mut">${left}</div><div class="row" style="gap:8px;margin-top:8px"><button class="pri" style="flex:1" data-a="ls-add" data-id="${p.id}" data-u="pack" ${p.stock<p.ppp?'disabled':''}>+ Per Pack ${money(p.packPrice)}</button><button class="pri" style="flex:1" data-a="ls-add" data-id="${p.id}" data-u="piece" ${p.stock<1?'disabled':''}>+ Per Piece ${money(p.piecePrice)}</button></div></div>`;
+return `<button class="card" style="width:100%;text-align:left;font-weight:500;margin-bottom:8px;min-height:64px;display:block" data-a="ls-add" data-id="${p.id}" ${p.stock<1?'disabled':''}><div class="row sp"><b>${nm}</b><b>${money(p.price)}</b></div><div class="mut">${left}</div></button>`};
+function sres(){const q=U.lsq.trim();let L;if(q)L=lsMatches(q);else if(U.browse)L=S.products.slice().sort((a,b)=>a.name.localeCompare(b.name));else return `<div class="card" style="text-align:center"><div class="mut" style="margin-bottom:10px">Type in the search box to find an item, or browse the full list.</div><button class="sm" data-a="ls-browse">Browse All Items</button></div>`;
+if(!L.length)return '<div class="card mut" style="text-align:center">No matching items found. Try another name, size or SKU.</div>';
+return (!q&&U.browse?`<div class="row sp" style="margin-bottom:6px"><span class="mut">All items</span><button class="sm" data-a="ls-hide">Hide list</button></div>`:'')+L.slice(0,40).map(rcard).join('')}
+function cartList(){const it=cartItems();if(!it.length)return '<div class="card mut" style="text-align:center">Nothing added yet.</div>';
+return it.map(i=>{const p=P(i.pid),k=ckey(i.pid,i.unit);return `<div class="card" style="margin-bottom:8px"><div class="row sp"><span><b>${esc(label(p))}</b><br><span class="mut">${i.unit?(i.unit=='pack'?'Per Pack':'Per Piece')+' · ':''}${money(i.price)} each</span></span><b>${money(i.qty*i.price)}</b></div><div class="row sp" style="margin-top:8px"><div class="step"><button data-a="cl" data-k="${k}" data-d="-1" aria-label="Less">−</button><b>${i.qty}</b><button data-a="cl" data-k="${k}" data-d="1" aria-label="More">+</button></div><button class="dng sm" data-a="cl-x" data-k="${k}">Remove</button></div></div>`}).join('')}
+function cartAdd(pid,u,dlt){const p=P(pid),key=ckey(pid,u),cur=U.cart[key]||0,avail=p.stock-cartPieces(pid,key),mx=u=='pack'?Math.floor(avail/p.ppp):avail;let n=cur+dlt;if(n>mx){n=Math.max(0,mx);if(dlt>0)toast(avail>0?'Only '+stk2(p,avail)+' available':'Out of stock')}n=Math.max(0,n);if(n)U.cart[key]=n;else delete U.cart[key];return n>cur}
+const cartUI=()=>{$('#cartlist').innerHTML=cartList();$('#ctot').textContent=money(cartTotal())};
+function saleSheet(){
+sheet(`<div class="sticky"><h2 style="margin:0 0 8px">Log a sale</h2><div class="sbox"><input id="ls" value="${esc(U.lsq)}" placeholder="Search item by name, SKU, or specification…" autocomplete="off" autocapitalize="off" aria-label="Search items"><button id="lsx" data-a="ls-clear" aria-label="Clear search" style="display:${U.lsq?'block':'none'}">×</button></div></div>
+<div id="sres">${sres()}</div>
+<h3 style="margin:16px 0 8px">In this sale</h3><div id="cartlist">${cartList()}</div>
 <label class="f">Payment</label><div class="chips">${['Cash','GCash','Maya','Card'].map(m=>`<button class="chip ${U.pay==m?'on':''}" data-a="pay" data-v="${m}">${m}</button>`).join('')}</div>
 <button class="pri" style="width:100%;font-size:18px" data-a="sale-confirm">Save sale · <span id="ctot">${money(cartTotal())}</span></button>`)}
 function prodSheet(id,draft){const p=draft||(id?P(id):{name:'',sku:'',cat:'',cost:'',price:'',stock:0,reorder:S.settings.low,unitType:'pcs',unitSpec:''}),u0=UNITS.includes(p.unitType)?p.unitType:(p.unitType?'custom':'pcs'),pk=!!p.packed,ppp=p.ppp||'',sp=pk&&ppp?Math.floor(p.stock/ppp):'0',sl=pk&&ppp?p.stock%ppp:'0';
@@ -246,11 +266,14 @@ case'signin':{const u=S.users.find(x=>x.id==U.pick);if(u&&await hp(u.id,$('#pin'
 case'setup-go':{const n=$('#s-n').value.trim(),p=$('#s-p').value;if(S.users.length)return render();if(!n)return toast('Please enter your name');if(!/^\d{4,8}$/.test(p))return toast('PIN must be 4 to 8 digits');put('users',{id:1,name:n,role:'admin',pin:await hp(1,p)});U.me=1;U.view='dash';render();break}
 case'signout':U.me=0;U.pick=0;close();closeDrawer();render();break;
 case'go':{const[v,f]=d.v.split(':');go(v,f);close();break}
-case'sale':U.cart={};U.sel={};saleSheet();break;
-case'cart':{const p=P(id);let u=null,key=String(id);if(p.packed){u=U.sel[id]||'pack';key=ckey(id,u)}
-const cur=U.cart[key]||0,avail=p.stock-cartPieces(id,key),mx=u=='pack'?Math.floor(avail/p.ppp):avail;let n=cur+ +d.d;if(n>mx){n=Math.max(0,mx);if(+d.d>0)toast(avail>0?'Only '+stk2(p,avail)+' available':'Out of stock')}n=Math.max(0,n);if(n)U.cart[key]=n;else delete U.cart[key];
-if(p.packed)refreshRow(id);else $('#q'+id).textContent=n;$('#ctot').textContent=money(cartTotal());break}
-case'usel':U.sel[id]=d.v;refreshRow(id);break;
+case'sale':U.cart={};U.sel={};U.lsq='';U.browse=false;saleSheet();break;
+case'ls-add':{const p=P(id),u=d.u||null;const hadQ=!!U.lsq;if(cartAdd(id,u,1)){U.lsq='';const li=$('#ls');li.value='';$('#lsx').style.display='none';$('#sres').innerHTML=sres();cartUI();if(hadQ)li.focus()}else cartUI();break}
+case'ls-clear':{U.lsq='';const li=$('#ls');li.value='';$('#lsx').style.display='none';$('#sres').innerHTML=sres();li.focus();break}
+case'ls-browse':U.browse=true;$('#sres').innerHTML=sres();break;
+case'ls-hide':U.browse=false;$('#sres').innerHTML=sres();break;
+case'cl':{const[pid,u]=d.k.split(':');cartAdd(+pid,u||null,+d.d);cartUI();break}
+case'cl-x':delete U.cart[d.k];cartUI();break;
+case'xp':{U.eOpen=U.eOpen||{};const v=d.v,el=$('#xp-'+v),on=!el.classList.contains('open');U.eOpen[v]=on;el.classList.toggle('open',on);const b=$('.act[data-v='+v+']');if(b){b.classList.toggle('on',on);b.setAttribute('aria-expanded',on)}if(on)setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'nearest'}),60);break}
 case'pay':U.pay=d.v;document.querySelectorAll('[data-a=pay]').forEach(b=>b.classList.toggle('on',b.dataset.v==d.v));break;
 case'sale-save':{const it=cartItems();if(!it.length)return toast('Add at least one item');const need={};it.forEach(i=>need[i.pid]=(need[i.pid]||0)+ipc(i));
 for(const k in need){const p=P(k);if(need[k]>p.stock)return toast('Only '+stk2(p,p.stock)+' available of '+label(p))}
@@ -277,7 +300,7 @@ case'void':{const s=S.sales.find(x=>x.id==id);s.void=true;put('sales',s);s.items
 case'rng':U.rng=d.v;render();break;case'invf':U.inv=d.v;render();break;case'catf':U.cat=d.v;render();break;
 case'e-save':{const p=P(+$('#e-p').value),raw=Math.max(0,+$('#e-q').value||0),pk=!!(p&&p.packed&&$('#e-u')&&$('#e-u').value=='pack'),q=pk?raw*p.ppp:raw,set=admin()&&$('#e-m')?.value=='set',c=$('#e-c').value;if(!p||!q&&!set)return toast('Enter a quantity');PENDE={pid:p.id,q,set,c};const nw=set?q:p.stock+q,uw=p.packed?(pk?(raw==1?' pack':' packs'):(raw==1?' pc':' pcs')):'';
 confirmSheet('Confirm stock entry',`<div style="font-size:17px">${set?'Set':'Add to'} <b>${esc(label(p))}</b> stock ${set?'to <b>'+raw+uw+'</b>':'by <b>+'+raw+uw+'</b>'}.<br>Stock changes from <b>${stk(p,p.stock)}</b> to <b>${stk(p,nw)}</b>.</div>${admin()&&c!==''?`<div class="mut" style="margin-top:8px">Unit cost will be set to ${money(+c)}${p.packed?' per pack':''}.</div>`:''}`,'Cancel','data-a="sheet-close"','Confirm','data-a="e-commit"');break}
-case'e-commit':{const{pid,q,set,c}=PENDE,p=P(pid);p.stock=set?q:p.stock+q;if(admin()&&c!==''){if(p.packed){p.costPack=+c;p.cost=+c/p.ppp}else p.cost=+c}put('products',p);log(p.name+(set?' stock set to '+stk(p,q):' +'+stk(p,q)+' (stock in)')+(c!==''?' at '+money(+c)+' each':'')+' by '+ME().name,'stock');close();render();toast(label(p)+' is now at '+qtyText(p,p.stock));break}
+case'e-commit':{const{pid,q,set,c}=PENDE,p=P(pid);p.stock=set?q:p.stock+q;if(admin()&&c!==''){if(p.packed){p.costPack=+c;p.cost=+c/p.ppp}else p.cost=+c}put('products',p);log(p.name+(set?' stock set to '+stk(p,q):' +'+stk(p,q)+' (stock in)')+(c!==''?' at '+money(+c)+' each':'')+' by '+ME().name,'stock');close();U.eOpen={...U.eOpen,stock:false};render();toast(label(p)+' is now at '+qtyText(p,p.stock));break}
 case'editp':prodSheet(id||null);break;
 case'p-save':{const n=$('#f-n').value.trim();if(!n)return toast('Please add an item name');let o;
 if($('#f-pk').checked){const ppp=Math.floor(+$('#f-ppp').value||0),pp=+$('#f-pkp').value||0,pcp=+$('#f-pcp').value||0,cp=+$('#f-cpk').value||0,sp=Math.max(0,Math.floor(+$('#f-sp').value||0)),sl=Math.max(0,Math.floor(+$('#f-sl').value||0));if(ppp<2)return toast('Pieces per pack must be 2 or more');
@@ -409,7 +432,8 @@ if(!rs.ok)throw new Error(rs.status==400||rs.status==401||rs.status==403?'Google
 const jr=await rs.json(),tx=((jr.candidates||[])[0]?.content?.parts||[]).map(c=>c.text||'').join(''),mm=/\{[\s\S]*\}/.exec(tx);let r={};try{r=JSON.parse(mm?mm[0]:'{}')}catch(e){}
 SC.pid=r.id&&P(r.id)?r.id:0;SC.name=r.name||'';SC.conf=r.confidence;scanSheet()}
 catch(err){sheet(`<h2 style="margin-top:0">Couldn’t read that photo</h2><div class="mut">${esc(err.message||'Photo recognition isn’t available right now.')} You can still choose the item yourself.</div><button class="pri" style="width:100%;margin-top:16px" data-a="sc-manual">Choose item</button>`)}});
-document.addEventListener('input',e=>{if(['f-n','f-us','f-uc','f-ppp','f-sp','f-sl'].includes(e.target.id))return pv();const q=e.target.dataset.q;if(!q)return;const v=e.target.value;
+document.addEventListener('input',e=>{if(e.target.id=='ls'){U.lsq=e.target.value;$('#sres').innerHTML=sres();$('#lsx').style.display=U.lsq?'block':'none';return}
+if(['f-n','f-us','f-uc','f-ppp','f-sp','f-sl'].includes(e.target.id))return pv();const q=e.target.dataset.q;if(!q)return;const v=e.target.value;
 if(q=='inv'){U.invQ=v;$('#invList').innerHTML=invList()}else if(q=='sales'){U.sq=v;$('#salesList').innerHTML=salesList()}else{U[q]=v;render();const el=document.querySelector('[data-q='+q+']');el&&el.focus()}});
 document.addEventListener('keydown',e=>{if(e.key=='Escape'){close();closeDrawer()}if(e.key=='Enter'&&e.target.id=='pin')document.querySelector('[data-a=signin]').click()});
 async function boot(){render();let d=null;

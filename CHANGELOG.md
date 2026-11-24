@@ -2,6 +2,13 @@
 
 Each update raises the version number. The version is shown at the bottom of the sign-in screen and the Dashboard. To release an update: change `APP_VERSION` and `APP_DATE` at the top of the script in `pages/index.html`, add a line here, and upload the file.
 
+## 1.6.0 (24 Nov 2026)
+- The menu drawer now has clean rows only: Recent activity, Admin settings (admins) and the Appearance switch, plus Sign out.
+- Recent activity and Admin settings open as their own full screens with a back arrow in the header.
+- Confirmation before saving: new sales and edited sales (Confirm Sale), products (Confirm Product Details, with "was" values when editing), Data Entry stock entries, quick + / - stock buttons on inventory cards, and deleting an item.
+- Going back from a confirmation keeps what you typed.
+- Sample data now loads faster.
+
 ## 1.5.0 (24 Nov 2026)
 - New header with a 3-line menu button on the left and the page title. The alert strip is gone from the home screen.
 - Slide-out menu drawer with Recent activity, Appearance (Light or Dark mode, remembered on the phone), Admin settings and Sign out.

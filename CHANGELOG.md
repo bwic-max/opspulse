@@ -2,6 +2,16 @@
 
 Each update raises the version number. The version is shown at the bottom of the sign-in screen and the Dashboard. To release an update: change `APP_VERSION` and `APP_DATE` at the top of the script in `pages/index.html`, add a line here, and upload the file.
 
+## 1.7.0 (24 Nov 2026)
+- Sell by Pack & Piece: new "Sold by Pack & Piece" option when adding or editing an item. Enter pieces per pack, price per pack, price per piece, and starting stock as packs and loose pieces.
+- Stock for these items is stored in total pieces, so there are no rounding errors. Inventory cards show it as packs and pieces, for example "9 packs, 17 pcs" with "197 pcs total".
+- Low-stock alerts compare total pieces against the reorder point converted from packs.
+- Quick Sale: each pack item has a Per Pack / Per Piece selector. One sale can mix both, and selling more than is in stock is blocked with a clear message.
+- Confirm Sale and receipts show each line, for example "1 pack (20 pcs) @ 100 = 100" and "3 pcs @ 6 = 18".
+- Edit Sale: change the quantity or switch a line between Per Pack and Per Piece. Stock is adjusted by the exact piece difference.
+- Data Entry and photo scan can add stock in packs or loose pieces. The + / - buttons on pack cards change stock by one full pack.
+- CSV export of items includes pack details. Sample data now includes pack items.
+
 ## 1.6.0 (24 Nov 2026)
 - The menu drawer now has clean rows only: Recent activity, Admin settings (admins) and the Appearance switch, plus Sign out.
 - Recent activity and Admin settings open as their own full screens with a back arrow in the header.

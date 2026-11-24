@@ -79,6 +79,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 @media(min-width:1000px){.igrid{grid-template-columns:repeat(4,minmax(0,1fr))}#app.wide{max-width:1100px}#top.wide .in{max-width:1100px}}
 @media(min-width:900px){#top .in{max-width:720px}}
 @media(prefers-reduced-motion:reduce){.dp,.dbk,.sw i,.sw i:after{transition:none}}
+.mi svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
 </style></head><body>
 <header id="top" style="display:none"><div class="in"><button id="menuBtn" data-a="menu" aria-label="Open menu"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><div id="ttl"></div></div></header>
 <div id="drawer"><div class="dbk" data-a="menu-close"></div><aside class="dp" id="dpanel" role="dialog" aria-label="Menu"></aside></div>
@@ -94,7 +95,7 @@ const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"]/g,c=>(
 let CURSYM='₱';const money=n=>CURSYM+(+n).toLocaleString('en-PH',{minimumFractionDigits:n%1?2:0,maximumFractionDigits:2});
 const DAY=864e5,sod=t=>{const d=new Date(t);d.setHours(0,0,0,0);return +d};
 const tm=t=>{const d=new Date(t),n=sod(Date.now());return (sod(t)==n?'Today':sod(t)==n-DAY?'Yesterday':d.toLocaleDateString(undefined,{month:'short',day:'numeric'}))+', '+d.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})};
-const APP_VERSION='1.5.0',APP_DATE='24 Nov 2026';
+const APP_VERSION='1.6.0',APP_DATE='24 Nov 2026';
 const KEY='opspulse-v3';
 function seed(){let r=7;const rnd=()=>(r=(r*9301+49297)%233280)/233280;
 const P=[['Cooking Oil','CO-01','Pantry','ml',500,62,75,24,8],['Tissue','TI-02','Household','pack',12,55,70,3,6],['Bottled Water','BW-03','Drinks','L',1.5,18,25,40,12],['Rice','RI-04','Pantry','kg',25,1150,1300,5,3],['Instant Noodles','IN-05','Pantry','g',60,12,16,0,20],['Soy Sauce','SS-06','Pantry','ml',385,24,32,18,6],['Sugar','SU-07','Pantry','kg',1,68,80,15,8],['Eggs','EG-08','Fresh','tray',12,95,115,9,4],['Coffee 3-in-1','CF-09','Drinks','box',30,135,165,7,3],['Cola','CL-10','Drinks','L',1,40,55,20,6]].map((a,i)=>({id:i+1,name:a[0],sku:a[1],cat:a[2],unitType:a[3],unitSpec:a[4],cost:a[5],price:a[6],stock:a[7],reorder:a[8]}));
@@ -131,7 +132,7 @@ const unitNoun=(p,n)=>{const u=p&&p.unitType;if(NOUN[u])return n==1?NOUN[u][0]:N
 const qtyText=(p,n)=>n+' '+unitNoun(p,n);
 const SB={out:['Out of Stock','bad'],low:['Low Stock','warn'],ok:['In Stock','ok']};
 const tag=(t,c)=>`<span class="tag ${c}">${t}</span>`,pTag=p=>tag(...SB[stat(p)]),rTag=u=>u.role=='admin'?tag('Admin','info'):tag('Staff','neu');
-const ic={grid:'<path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"/>',list:'<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',dash:'<path d="M4 13h6V4H4zM14 20h6V11h-6zM4 20h6v-4H4zM14 7h6V4h-6z"/>',inv:'<path d="M3 7l9-4 9 4-9 4zM3 7v10l9 4 9-4V7M12 11v10"/>',rep:'<path d="M4 20V11M10 20V5M16 20v-6M2 20h20"/>',entry:'<path d="M4 4h16v16H4zM12 8v8M8 12h8"/>'};
+const ic={clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',gear:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/>',out:'<path d="M9 21H5V3h4M16 17l5-5-5-5M21 12H9"/>',grid:'<path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"/>',list:'<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',dash:'<path d="M4 13h6V4H4zM14 20h6V11h-6zM4 20h6v-4H4zM14 7h6V4h-6z"/>',inv:'<path d="M3 7l9-4 9 4-9 4zM3 7v10l9 4 9-4V7M12 11v10"/>',rep:'<path d="M4 20V11M10 20V5M16 20v-6M2 20h20"/>',entry:'<path d="M4 4h16v16H4zM12 8v8M8 12h8"/>'};
 const sumSales=(a,b)=>S.sales.filter(s=>!s.void&&s.ts>=a&&s.ts<b).reduce((x,s)=>x+s.total,0);
 const profit=L=>L.reduce((a,s)=>a+s.items.reduce((b,i)=>b+i.qty*(i.price-(P(i.pid)?.cost||0)),0),0);
 const lowItems=()=>S.products.filter(p=>stat(p)!=='ok');
@@ -188,11 +189,11 @@ ${U.rng=='custom'?`<div class="two" style="margin-bottom:12px"><div><label class
 
 function setup(){return `<div style="padding-top:28px"><h1>Welcome to Store Yah!</h1><div class="mut" style="margin:4px 0 16px">Create the owner account. You’ll sign in with this PIN as admin.</div><div class="card">${fld('Your name','s-n')}${fld('PIN (4 to 8 digits)','s-p','','password')}<button class="pri" style="width:100%;margin-top:14px" data-a="setup-go">Create owner account</button></div></div>`}
 function render(){if(!READY){$('#app').innerHTML='<div class="card mut" style="margin-top:40px">Loading your shop data…</div>';$('#navw').style.display='none';$('#fab').style.display='none';return}
-if(U.me&&!ME())U.me=0;const on=!!U.me,a=admin();
+if(U.me&&!ME())U.me=0;const on=!!U.me,a=admin();if(U.view=='settings'&&!a)U.view='dash';
 try{if(U.me){if(!localStorage.getItem('opspulse-session'))localStorage.setItem('opspulse-session',JSON.stringify({id:U.me,t:Date.now()}))}else localStorage.removeItem('opspulse-session')}catch(e){}$('#navw').style.display=on?'':'none';
-$('#app').innerHTML=on?{dash,inv,entry,report}[U.view]():(S.users.length?login():setup());
+$('#app').innerHTML=on?{dash,inv,entry,report,activity,settings:settingsView}[U.view]():(S.users.length?login():setup());
 if(!on)$('#app').insertAdjacentHTML('beforeend',`<div class="mut" style="text-align:center;margin-top:28px">Store Yah! v${APP_VERSION} · ${APP_DATE}</div>`);
-$('#top').style.display=on?'':'none';$('#ttl').textContent={dash:'Dashboard',inv:'Inventory',entry:'Data Entry',report:'Sales Report'}[U.view]||'Store Yah!';$('#app').classList.toggle('wide',on&&U.view=='inv');$('#top').classList.toggle('wide',on&&U.view=='inv');
+$('#top').style.display=on?'':'none';$('#ttl').textContent={dash:'Dashboard',inv:'Inventory',entry:'Data Entry',report:'Sales Report',activity:'Recent Activity',settings:'Admin Settings'}[U.view]||'Store Yah!';$('#app').classList.toggle('wide',on&&U.view=='inv');$('#top').classList.toggle('wide',on&&U.view=='inv');const sub=on&&(U.view=='activity'||U.view=='settings'),mb=$('#menuBtn');mb.dataset.a=sub?'back':'menu';mb.setAttribute('aria-label',sub?'Back':'Open menu');mb.innerHTML=sub?'<svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>':'<svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>';
 const N=[['dash','Dashboard'],['inv','Inventory'],...(a?[['report','Reports']]:[]),['entry','Data Entry']];
 $('#nav').innerHTML=N.map(n=>`<button class="${U.view==n[0]?'on':''}" data-a="go" data-v="${n[0]}"><svg viewBox="0 0 24 24">${ic[n[0]]}</svg>${n[1]}</button>`).join('');$('#fab').style.display=on&&(U.view=='dash'||U.view=='report')?'':'none';save()}
 
@@ -201,8 +202,8 @@ const cartTotal=()=>Object.entries(U.cart).reduce((a,[id,q])=>a+q*P(id).price,0)
 function saleSheet(){const L=S.products.filter(p=>p.stock>0);
 sheet(`<h2 style="margin-top:0">Log a sale</h2>${L.map(p=>`<div class="pick"><span><b>${esc(label(p))}</b><br><span class="mut">${money(p.price)} · ${qtyText(p,p.stock)} left</span></span><div class="step"><button data-a="cart" data-id="${p.id}" data-d="-1" aria-label="Less">−</button><b id="q${p.id}">${U.cart[p.id]||0}</b><button data-a="cart" data-id="${p.id}" data-d="1" aria-label="More">+</button></div></div>`).join('')||'<div class="mut">Nothing in stock to sell.</div>'}
 <label class="f">Payment</label><div class="chips">${['Cash','GCash','Maya','Card'].map(m=>`<button class="chip ${U.pay==m?'on':''}" data-a="pay" data-v="${m}">${m}</button>`).join('')}</div>
-<button class="pri" style="width:100%;font-size:18px" data-a="sale-save">Save sale · <span id="ctot">${money(cartTotal())}</span></button>`)}
-function prodSheet(id){const p=id?P(id):{name:'',sku:'',cat:'',cost:'',price:'',stock:0,reorder:S.settings.low,unitType:'pcs',unitSpec:''},u0=UNITS.includes(p.unitType)?p.unitType:(p.unitType?'custom':'pcs');
+<button class="pri" style="width:100%;font-size:18px" data-a="sale-confirm">Save sale · <span id="ctot">${money(cartTotal())}</span></button>`)}
+function prodSheet(id,draft){const p=draft||(id?P(id):{name:'',sku:'',cat:'',cost:'',price:'',stock:0,reorder:S.settings.low,unitType:'pcs',unitSpec:''}),u0=UNITS.includes(p.unitType)?p.unitType:(p.unitType?'custom':'pcs');
 sheet(`<h2 style="margin-top:0">${id?'Edit item':'Add new item'}</h2>${fld('Name','f-n',p.name)}
 <div class="two"><div><label class="f" for="f-u">Unit type</label><select id="f-u">${UNITS.map(u=>`<option value="${u}" ${u==u0?'selected':''}>${u}</option>`).join('')}<option value="custom" ${u0=='custom'?'selected':''}>Custom…</option></select></div><div>${fld('Unit size (optional)','f-us',p.unitSpec??'','number')}</div></div>
 <div id="f-cw" style="display:${u0=='custom'?'block':'none'}">${fld('Custom unit name','f-uc',u0=='custom'?p.unitType:'')}</div><div class="mut" id="f-pv" style="margin:6px 0"></div>
@@ -213,7 +214,7 @@ function teamSheet(){const m=ME();sheet(`<h2 style="margin-top:0">Manage team</h
 <h3>Add a person</h3>${fld('Name','u-n')}<div class="two"><div>${fld('PIN (4 to 8 digits)','u-p','','password')}</div><div><label class="f" for="u-r">Access</label><select id="u-r"><option value="staff">Staff</option><option value="admin">Admin</option></select></div></div><button class="pri" style="width:100%;margin-top:12px" data-a="u-add">Add person</button>
 <h3 style="margin-top:22px">Change my PIN</h3>${fld('New PIN','u-m','','password')}<button style="width:100%;margin-top:12px" data-a="u-pin">Save my PIN</button><div class="mut" style="margin-top:14px">PINs keep casual users out on a shared device. Data is stored in this browser, so it is not bank-level security.</div>`)}
 
-const ADM=['settings','settings-save','low-all','low-go','sale-e','ed-q','ed-x','ed-save','void','p-save','p-del','editp','team','u-add','u-del','u-pin','sample','clear','clear-go','key','key-save','key-clear'];
+const ADM=['p-commit','p-del-go','p-back','settings','settings-save','low-all','low-go','sale-e','ed-q','ed-x','ed-save','void','p-save','p-del','editp','team','u-add','u-del','u-pin','sample','clear','clear-go','key','key-save','key-clear'];
 document.addEventListener('click',async e=>{if(e.target.id=='sheet')return close();const t=e.target.closest('[data-a]');if(!t||t.tagName=='SELECT')return;const d=t.dataset,id=+d.id;
 if(ADM.includes(d.a)&&!admin())return toast('Only admins can do that');
 switch(d.a){
@@ -233,7 +234,8 @@ sheet(`<h2 style="margin-top:0">Sale #${s.id} ${s.void?tag('Voided','bad'):''} $
 case'sale-e':{const s=S.sales.find(x=>x.id==id);if(s.void)return toast('Voided sales can’t be edited');ED={s,items:s.items.map(i=>({...i})),old:{}};s.items.forEach(i=>ED.old[i.pid]=i.qty);editSheet();break}
 case'ed-q':{const k=+d.i;edSet(k,ED.items[k].qty+ +d.d);break}
 case'ed-x':ED.items.splice(+d.i,1);editSheet();break;
-case'ed-save':{const s=ED.s;if(!ED.items.length)return toast('A sale needs at least one item. Use Void to cancel it.');const dl=edDelta();if(!dl.length)return toast('No changes to save');
+case'ed-save':{const r=edCheck();if(r.err)return toast(r.err);edConfirm(r.dl);break}
+case'ed-commit':{const s=ED.s;if(!ED.items.length)return toast('A sale needs at least one item. Use Void to cancel it.');const dl=edDelta();if(!dl.length)return toast('No changes to save');
 for(const x of dl){const p=P(x.pid);if(p&&x.d>p.stock)return toast('Not enough '+label(p)+': only '+qtyText(p,p.stock)+' available')}
 const oldT=s.total,notes=dl.map(x=>label(P(x.pid))+' '+x.old+' to '+x.nw);
 dl.forEach(x=>{const p=P(x.pid);if(p){p.stock-=x.d;put('products',p)}});
@@ -242,12 +244,17 @@ s.editedAt=Date.now();s.editedBy=ME().name;s.edits=[...(s.edits||[]),{ts:s.edite
 log('Sale #'+s.id+' edited by '+s.editedBy+' ('+money(oldT)+' to '+money(s.total)+')','sale');close();render();toast('Sale updated. Stock and totals adjusted.');break}
 case'void':{const s=S.sales.find(x=>x.id==id);s.void=true;put('sales',s);s.items.forEach(i=>{const p=P(i.pid);if(p){p.stock+=i.qty;put('products',p)}});log('Sale #'+id+' voided ('+money(s.total)+')','sale');close();render();toast('Sale voided');break}
 case'rng':U.rng=d.v;render();break;case'invf':U.inv=d.v;render();break;case'catf':U.cat=d.v;render();break;
-case'e-save':{const p=P(+$('#e-p').value),q=Math.max(0,+$('#e-q').value||0),set=admin()&&$('#e-m')?.value=='set',c=$('#e-c').value;if(!p||!q&&!set)return toast('Enter a quantity');
-p.stock=set?q:p.stock+q;if(admin()&&c!=='')p.cost=+c;put('products',p);log(p.name+(set?' stock set to '+q:' +'+q+' (stock in)')+(c!==''?' at '+money(+c)+' each':'')+' by '+ME().name,'stock');render();toast(label(p)+' is now at '+qtyText(p,p.stock));break}
+case'e-save':{const p=P(+$('#e-p').value),q=Math.max(0,+$('#e-q').value||0),set=admin()&&$('#e-m')?.value=='set',c=$('#e-c').value;if(!p||!q&&!set)return toast('Enter a quantity');PENDE={pid:p.id,q,set,c};const nw=set?q:p.stock+q;
+confirmSheet('Confirm stock entry',`<div style="font-size:17px">${set?'Set':'Add to'} <b>${esc(label(p))}</b> stock ${set?'to <b>'+q+'</b>':'by <b>+'+q+'</b>'}.<br>Stock changes from <b>${p.stock}</b> to <b>${nw}</b>.</div>${admin()&&c!==''?`<div class="mut" style="margin-top:8px">Unit cost will be set to ${money(+c)}.</div>`:''}`,'Cancel','data-a="sheet-close"','Confirm','data-a="e-commit"');break}
+case'e-commit':{const{pid,q,set,c}=PENDE,p=P(pid);p.stock=set?q:p.stock+q;if(admin()&&c!=='')p.cost=+c;put('products',p);log(p.name+(set?' stock set to '+q:' +'+q+' (stock in)')+(c!==''?' at '+money(+c)+' each':'')+' by '+ME().name,'stock');close();render();toast(label(p)+' is now at '+qtyText(p,p.stock));break}
 case'editp':prodSheet(id||null);break;
-case'p-save':{const n=$('#f-n').value.trim();if(!n)return toast('Please add an item name');const uu=$('#f-u').value,us=$('#f-us').value.trim();const o={unitType:uu=='custom'?($('#f-uc').value.trim()||'pcs'):uu,unitSpec:us===''?'':+us,name:n,sku:$('#f-s').value,cat:$('#f-c').value||'General',cost:+$('#f-co').value||0,price:+$('#f-pr').value||0,stock:+$('#f-st').value||0,reorder:+$('#f-r').value||0};
-if(id)put('products',{...P(id),...o});else{put('products',{id:nextId(S.products),...o});log('Added new item '+n,'stock')}close();render();toast('Item saved');break}
-case'p-del':rm('products',id);close();render();toast('Item deleted');break;
+case'p-save':{const n=$('#f-n').value.trim();if(!n)return toast('Please add an item name');const uu=$('#f-u').value,us=$('#f-us').value.trim();
+const o={unitType:uu=='custom'?($('#f-uc').value.trim()||'pcs'):uu,unitSpec:us===''?'':+us,name:n,sku:$('#f-s').value,cat:$('#f-c').value||'General',cost:+$('#f-co').value||0,price:+$('#f-pr').value||0,stock:+$('#f-st').value||0,reorder:+$('#f-r').value||0};
+PENDP={id:id||0,o};const old=id?P(id):null,was=(a,b)=>old&&a!=b?` <span class="mut">(was ${b})</span>`:'';
+confirmSheet('Confirm product details',`<div class="card">${kv('Name',esc(n))}${kv('Unit / specification',esc(uspec(o)||'None'))}${kv('Stock',qtyText(o,o.stock)+(old?was(o.stock,old.stock):''))}${kv('Selling price',money(o.price)+(old?was(o.price,money(old.price)):''))}${kv('Unit cost',money(o.cost))}${kv('Reorder at',o.reorder)}</div>`,'Cancel','data-a="p-back"','Confirm &amp; Save','data-a="p-commit"');break}
+case'p-commit':{const{id:pid,o}=PENDP;if(pid)put('products',{...P(pid),...o});else{put('products',{id:nextId(S.products),...o});log('Added new item '+o.name,'stock')}close();render();toast('Item saved');break}
+case'p-del':confirmSheet('Delete item?',`<div>Delete <b>${esc(label(P(id)))}</b>? This can’t be undone.</div>`,'Cancel','data-a="sheet-close"','Delete','data-a="p-del-go" data-id="'+id+'"','dng');break;
+case'p-del-go':rm('products',id);close();render();toast('Item deleted');break;
 case'scan':$('#cam').click();break;
 case'sc-q':{const i=$('#sc-q');i.value=Math.max(1,(+i.value||1)+ +d.d);break}
 case'sc-mode':SC.mode=d.v;document.querySelectorAll('[data-a=sc-mode]').forEach(b=>b.classList.toggle('on',b.dataset.v==d.v));break;
@@ -259,14 +266,23 @@ close();render();break}
 case'menu':openDrawer();break;
 case'menu-close':closeDrawer();break;
 case'theme':THEME=isDark()?'light':'dark';try{localStorage.setItem('opspulse-theme',THEME)}catch(e){}applyTheme();$('#dpanel').innerHTML=drawerHTML();$('#dpanel [data-a=theme]').focus();break;
-case'settings':closeDrawer();settingsSheet();break;
+case'settings':openSub('settings');break;
+case'activity':openSub('activity');break;
+case'back':U.view=U.prev&&!['activity','settings'].includes(U.prev)?U.prev:'dash';render();scrollTo(0,0);break;
+case'sheet-close':close();break;
+case'sale-confirm':{if(!Object.values(U.cart).some(q=>q>0))return toast('Add at least one item');saleConfirm();break}
+case'sale-back':saleSheet();break;
+case'ed-back':editSheet();break;
+case'p-back':prodSheet(PENDP.id||null,{...PENDP.o});break;
 case'settings-save':{const cur=$('#s-cur').value=='custom'?($('#s-curc').value.trim()||'₱'):$('#s-cur').value;S.settings={biz:$('#s-biz').value.trim(),phone:$('#s-ph').value.trim(),address:$('#s-ad').value.trim(),cur,low:Math.max(0,Math.floor(+$('#s-low').value||0))};CURSYM=cur;save();close();render();toast('Settings saved');break}
-case'low-all':{const v=Math.max(0,Math.floor(+$('#s-low').value||0));sheet(`<h2 style="margin-top:0">Apply to all items?</h2><div class="mut">Set the reorder point of all ${S.products.length} items to ${v}. Items at or below it will show as Low Stock.</div><button class="pri" style="width:100%;margin-top:16px" data-a="low-go" data-v="${v}">Yes, apply to all</button><button style="width:100%;margin-top:8px" data-a="settings">Cancel</button>`);break}
+case'low-all':{const v=Math.max(0,Math.floor(+$('#s-low').value||0));sheet(`<h2 style="margin-top:0">Apply to all items?</h2><div class="mut">Set the reorder point of all ${S.products.length} items to ${v}. Items at or below it will show as Low Stock.</div><button class="pri" style="width:100%;margin-top:16px" data-a="low-go" data-v="${v}">Yes, apply to all</button><button style="width:100%;margin-top:8px" data-a="sheet-close">Cancel</button>`);break}
 case'low-go':{const v=+d.v;S.settings.low=v;S.products.forEach(p=>put('products',{...p,reorder:v}));save();close();render();toast('Reorder point set to '+v+' for all items');break}
 case'export':{const k=d.v,rows=k=='sales'?S.sales.map(x=>({id:x.id,date:new Date(x.ts).toLocaleString(),payment:x.pay,by:x.by||'',total:x.total,items:sName(x),edited:x.editedAt?'yes':'',voided:x.void?'yes':''})):S.products.map(x=>({id:x.id,name:x.name,unit:x.unitType||'',unit_size:x.unitSpec??'',sku:x.sku,category:x.cat,cost:x.cost,price:x.price,stock:x.stock,reorder:x.reorder}));
 if(!rows.length)return toast('Nothing to export yet');const b=new Blob(['\ufeff'+csvOf(rows)],{type:'text/csv'}),a2=document.createElement('a');a2.href=URL.createObjectURL(b);a2.download='store-yah-'+k+'.csv';document.body.appendChild(a2);a2.click();a2.remove();break}
 case'invview':U.invView=U.invView=='list'?'grid':'list';try{localStorage.setItem('opspulse-invview',U.invView)}catch(e){}render();break;
-case'adj':{const p=P(id),dl=+d.d;if(dl<0&&!admin())return toast('Only admins can reduce stock');if(dl<0&&p.stock<=0)return toast('Already at zero');p.stock=Math.max(0,p.stock+dl);put('products',p);log(label(p)+' stock '+(dl>0?'+1':'−1')+' (quick adjust) by '+ME().name,'stock');const el=$('#invList [data-pc="'+id+'"]');if(el){el.outerHTML=pcard(p,U.invView!='list');const nb=$('#invList [data-pc="'+id+'"] [data-d="'+d.d+'"]');if(nb)nb.focus()}break}
+case'adj':{const p=P(id),dl=+d.d;if(dl<0&&!admin())return toast('Only admins can reduce stock');if(dl<0&&p.stock<=0)return toast('Already at zero');const nw=Math.max(0,p.stock+dl);
+confirmSheet('Confirm stock update',`<div style="font-size:18px">Update <b>${esc(label(p))}</b> stock from <b>${p.stock}</b> to <b>${nw}</b>?</div>`,'Cancel','data-a="sheet-close"','Confirm',`data-a="adj-go" data-id="${p.id}" data-d="${d.d}"`);break}
+case'adj-go':{const p=P(id),dl=+d.d;if(dl<0&&!admin())return toast('Only admins can reduce stock');p.stock=Math.max(0,p.stock+dl);put('products',p);log(label(p)+' stock '+(dl>0?'+1':'−1')+' (quick adjust) by '+ME().name,'stock');close();const el=$('#invList [data-pc="'+id+'"]');if(el){el.outerHTML=pcard(p,U.invView!='list');const nb=$('#invList [data-pc="'+id+'"] [data-d="'+d.d+'"]');if(nb)nb.focus()}toast(label(p)+' is now at '+qtyText(p,p.stock));break}
 case'team':teamSheet();break;
 case'key':{const has=!!localStorage.getItem('opspulse-gkey');sheet(`<h2 style="margin-top:0">Photo scan key</h2><div class="mut">Paste a free Gemini API key from Google AI Studio (aistudio.google.com, then Get API key). It is saved on this phone only and used to recognize photos. Keep billing turned off on that Google project so it stays free. On the free tier Google may use submitted content to improve its products, so don’t scan anything private. Anyone who can open this app on this phone can use the key.</div>${fld('Gemini API key','k-v','','password')}<button class="pri" style="width:100%;margin-top:14px" data-a="key-save">Save key</button>${has?'<button class="dng" style="width:100%;margin-top:8px" data-a="key-clear">Remove key</button>':''}`);break}
 case'key-save':{const v=$('#k-v').value.trim();if(!/^(AIza[\w-]{20,}|AQ\.[\w.-]{20,})$/.test(v))return toast('That doesn’t look like a Gemini key. It starts with AQ. or AIza.');try{localStorage.setItem('opspulse-gkey',v);localStorage.removeItem('opspulse-key')}catch(e){return toast('Couldn’t save the key')}close();toast('Key saved');break}
@@ -275,31 +291,41 @@ case'u-add':{const n=$('#u-n').value.trim(),p=$('#u-p').value;if(!n)return toast
 case'u-del':rm('users',id);teamSheet();break;
 case'u-pin':{const p=$('#u-m').value;if(!/^\d{4,8}$/.test(p))return toast('PIN must be 4 to 8 digits');const m=ME();m.pin=await hp(m.id,p);put('users',m);close();toast('PIN changed');break}
 case'sample':{if(S.products.length||S.sales.length)return toast('Clear existing data first');const sd=seed(),cut=Date.now()-7*DAY;toast('Loading sample data…');
-for(const o of sd.products){put('products',o);await wait(50)}for(const o of sd.sales.filter(x=>x.ts>cut).map((x,i)=>({...x,id:i+1}))){put('sales',o);await wait(50)}log('Sample items and sales loaded','stock');render();toast('Sample data loaded');break}
-case'clear':sheet(`<h2 style="margin-top:0">Clear items and sales?</h2><div class="mut">This deletes every item and sale for everyone. Team members are kept. It can’t be undone.</div><button class="dng" style="width:100%;margin-top:16px" data-a="clear-go">Yes, clear everything</button><button style="width:100%;margin-top:8px" data-a="go" data-v="dash">Cancel</button>`);break;
-case'clear-go':{close();toast('Clearing…');for(const o of [...S.sales]){rm('sales',o.id);await wait(50)}for(const o of [...S.products]){rm('products',o.id);await wait(50)}log('All items and sales cleared','stock');render();toast('All cleared');break}
+for(const o of sd.products){put('products',o);if(DBX)await wait(50)}for(const o of sd.sales.filter(x=>x.ts>cut).map((x,i)=>({...x,id:i+1}))){put('sales',o);if(DBX)await wait(50)}log('Sample items and sales loaded','stock');render();toast('Sample data loaded');break}
+case'clear':sheet(`<h2 style="margin-top:0">Clear items and sales?</h2><div class="mut">This deletes every item and sale for everyone. Team members are kept. It can’t be undone.</div><button class="dng" style="width:100%;margin-top:16px" data-a="clear-go">Yes, clear everything</button><button style="width:100%;margin-top:8px" data-a="sheet-close">Cancel</button>`);break;
+case'clear-go':{close();toast('Clearing…');for(const o of [...S.sales]){rm('sales',o.id);if(DBX)await wait(50)}for(const o of [...S.products]){rm('products',o.id);if(DBX)await wait(50)}log('All items and sales cleared','stock');render();toast('All cleared');break}
 }});
-function drawerHTML(){const m=ME(),a=admin(),dk=isDark();
+function drawerHTML(){const m=ME(),a=admin(),dk=isDark(),row=(act,ico,txt)=>`<button class="mi" data-a="${act}"><span class="row" style="gap:12px"><svg viewBox="0 0 24 24">${ico}</svg>${txt}</span><span>›</span></button>`;
 return `<div class="row sp"><div><b style="font:800 22px 'Bricolage Grotesque',Figtree,sans-serif">Store Yah!</b><div class="mut">${esc(S.settings.biz||'')}</div></div><button id="dclose" data-a="menu-close" aria-label="Close menu" style="width:48px;padding:0;font-size:28px">×</button></div>
-<div style="margin-top:10px"><b>${esc(m.name)}</b> ${rTag(m)}</div>
-<div class="dsec">Appearance</div><button class="sw" role="switch" aria-checked="${dk}" data-a="theme"><span>${dk?'Dark mode':'Light mode'}</span><i></i></button>
-${a?`<div class="dsec">Admin</div><button class="mi" data-a="settings"><span>Admin settings</span><span>›</span></button>`:''}
-<div class="dsec">Recent activity</div><div class="feed">${S.log.slice(0,12).map(l=>`<div>${esc(l.t)}<div class="mut" style="padding:0">${tm(l.ts)}</div></div>`).join('')||'<div class="mut">Nothing yet. Log your first sale.</div>'}</div>
-<button class="mi" data-a="signout" style="margin-top:20px"><span>Sign out</span></button>
+<div style="margin:10px 0 14px"><b>${esc(m.name)}</b> ${rTag(m)}</div>
+${row('activity',ic.clock,'Recent activity')}${a?row('settings',ic.gear,'Admin settings'):''}
+<button class="sw" role="switch" aria-checked="${dk}" data-a="theme" style="margin-top:8px"><span><span class="mut" style="font-size:13px">Appearance</span><br><b>${dk?'Dark mode':'Light mode'}</b></span><i></i></button>
+<button class="mi" data-a="signout" style="margin-top:24px"><span class="row" style="gap:12px"><svg viewBox="0 0 24 24">${ic.out}</svg>Sign out</span></button>
 <div class="mut" style="margin-top:18px">Store Yah! v${APP_VERSION} · ${APP_DATE}${LOCAL?'<br>Data is saved on this phone only.':''}</div>`}
 function openDrawer(){$('#dpanel').innerHTML=drawerHTML();$('#drawer').classList.add('open');$('#dclose').focus()}
 function closeDrawer(){const d=$('#drawer');if(d.classList.contains('open')){d.classList.remove('open');const b=$('#menuBtn');if(b)b.focus()}}
 function csvOf(rows){if(!rows.length)return'';const c=Object.keys(rows[0]),e=v=>{v=String(v??'');return/[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};return[c.join(','),...rows.map(r=>c.map(k=>e(r[k])).join(','))].join('\n')}
-function settingsSheet(){const st=S.settings,pre=['₱','$','€','£','¥','₹'],isC=!pre.includes(st.cur);
-sheet(`<h2 style="margin-top:0">Admin settings</h2>
-<h3>Business profile</h3>${fld('Business name','s-biz',st.biz)}${fld('Phone (optional)','s-ph',st.phone)}${fld('Address (optional)','s-ad',st.address)}
+function settingsView(){const st=S.settings,pre=['₱','$','€','£','¥','₹'],isC=!pre.includes(st.cur);
+return `<h3>Business profile</h3>${fld('Business name','s-biz',st.biz)}${fld('Phone (optional)','s-ph',st.phone)}${fld('Address (optional)','s-ad',st.address)}
 <h3 style="margin-top:22px">Currency</h3><label class="f" for="s-cur">Currency symbol</label><select id="s-cur">${[['₱','Philippine peso (₱)'],['$','US dollar ($)'],['€','Euro (€)'],['£','British pound (£)'],['¥','Yen or yuan (¥)'],['₹','Indian rupee (₹)']].map(c=>`<option value="${c[0]}" ${st.cur==c[0]?'selected':''}>${c[1]}</option>`).join('')}<option value="custom" ${isC?'selected':''}>Other…</option></select>
 <div id="s-cw" style="display:${isC?'block':'none'}">${fld('Your symbol, for example RM or Rp','s-curc',isC?st.cur:'')}</div><div class="mut" style="margin-top:6px">Only the symbol changes. Amounts are not converted.</div>
 <h3 style="margin-top:22px">Low-stock threshold</h3>${fld('Default reorder point for new items','s-low',st.low,'number')}<button style="width:100%;margin-top:8px" data-a="low-all">Apply to all existing items</button>
 <button class="pri" style="width:100%;margin-top:18px" data-a="settings-save">Save settings</button>
 <h3 style="margin-top:26px">Team and tools</h3><div class="row wrap"><button data-a="team">Manage team</button><button data-a="key">Photo scan key</button></div>
 <h3 style="margin-top:26px">Export</h3><div class="row wrap"><button data-a="export" data-v="sales">Sales (CSV)</button><button data-a="export" data-v="items">Items (CSV)</button></div>
-<h3 style="margin-top:26px">Reset data</h3>${S.products.length||S.sales.length?'<button class="dng" data-a="clear">Clear items &amp; sales</button>':'<button data-a="sample">Load sample data</button>'}`)}
+<h3 style="margin-top:26px">Reset data</h3>${S.products.length||S.sales.length?'<button class="dng" data-a="clear">Clear items &amp; sales</button>':'<button data-a="sample">Load sample data</button>'}`}
+function openSub(v){closeDrawer();if(!['activity','settings'].includes(U.view))U.prev=U.view;U.view=v;render();scrollTo(0,0)}
+function activity(){const L=S.log,tg={sale:['Sale','ok'],stock:['Stock','info']};if(!L.length)return'<div class="card mut">Nothing yet. Log a sale or update stock and it will show here.</div>';
+let day='',h='';L.forEach(l=>{const t0=sod(Date.now()),dk=sod(l.ts)==t0?'Today':sod(l.ts)==t0-DAY?'Yesterday':new Date(l.ts).toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'});if(dk!=day){day=dk;h+=`<div class="dsec">${dk}</div>`}
+h+=`<div class="card" style="margin-bottom:8px"><div class="row sp"><span>${esc(l.t)}</span>${tag(...(tg[l.k]||['Other','neu']))}</div><div class="mut">${new Date(l.ts).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})}</div></div>`});return h}
+const kv=(k,v)=>`<div class="row sp" style="padding:5px 0"><span class="mut">${k}</span><b style="text-align:right">${v}</b></div>`;
+function confirmSheet(title,body,backLbl,backAttr,okLbl,okAttr,okCls='pri'){sheet(`<h2 style="margin-top:0">${title}</h2>${body}<div class="row" style="margin-top:18px"><button style="flex:1" ${backAttr}>${backLbl}</button><button class="${okCls}" style="flex:1.4" ${okAttr}>${okLbl}</button></div>`)}
+function saleConfirm(){const it=Object.entries(U.cart).filter(x=>x[1]>0).map(([id,q])=>({p:P(id),q})),tot=it.reduce((a,x)=>a+x.q*x.p.price,0);
+confirmSheet('Confirm sale',`<div class="card">${it.map(x=>`<div class="row sp" style="padding:4px 0"><span>${x.q} × ${esc(label(x.p))}<br><span class="mut">${money(x.p.price)} each</span></span><b>${money(x.q*x.p.price)}</b></div>`).join('')}<div class="row sp" style="border-top:1px solid var(--line);margin-top:6px;padding-top:8px"><b>Total</b><b class="big" style="font-size:24px">${money(tot)}</b></div></div>${kv('Payment method',esc(U.pay))}`,'Cancel / Go Back','data-a="sale-back"','Confirm &amp; Save Sale','data-a="sale-save"')}
+function edCheck(){if(!ED.items.length)return{err:'A sale needs at least one item. Use Void to cancel it.'};const dl=edDelta();if(!dl.length)return{err:'No changes to save'};for(const x of dl){const p=P(x.pid);if(p&&x.d>p.stock)return{err:'Not enough '+label(p)+': only '+qtyText(p,p.stock)+' available'}}return{dl}}
+function edConfirm(dl){const s=ED.s,tot=ED.items.reduce((a,i)=>a+i.qty*i.price,0);
+confirmSheet('Confirm sale update',`<div class="card">${ED.items.map(i=>`<div class="row sp" style="padding:4px 0"><span>${i.qty} × ${esc(label(P(i.pid)))}</span><b>${money(i.qty*i.price)}</b></div>`).join('')}<div class="row sp" style="border-top:1px solid var(--line);margin-top:6px;padding-top:8px"><b>Total</b><b class="big" style="font-size:24px">${money(tot)}</b></div>${tot!=s.total?`<div class="mut">Was ${money(s.total)}</div>`:''}</div>${kv('Payment method',esc(s.pay))}<div class="mut" style="margin-top:8px">${dl.map(x=>esc(label(P(x.pid)))+': '+(x.d>0?'takes '+x.d+' more from stock':'returns '+(-x.d)+' to stock')).join('<br>')}</div>`,'Cancel / Go Back','data-a="ed-back"','Confirm &amp; Save Sale','data-a="ed-commit"')}
+let PENDP=null,PENDE=null;
 let ED=null;
 const edMax=pid=>{const p=P(pid);return p?(ED.old[pid]||0)+p.stock:ED.items.find(x=>x.pid==pid).qty};
 function edSet(i,q){const it=ED.items[i],p=P(it.pid),mx=edMax(it.pid);q=Math.floor(q)||1;if(q<1)q=1;if(q>mx){q=mx;toast(p?'Only '+qtyText(p,p.stock)+' more available':'That item no longer exists')}it.qty=q;editSheet()}

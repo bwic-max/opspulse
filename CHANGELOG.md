@@ -2,6 +2,13 @@
 
 Each update raises the version number. The version is shown at the bottom of the sign-in screen and the Dashboard. To release an update: change `APP_VERSION` and `APP_DATE` at the top of the script in `pages/index.html`, add a line here, and upload the file.
 
+## 1.5.0 (24 Nov 2026)
+- New header with a 3-line menu button on the left and the page title. The alert strip is gone from the home screen.
+- Slide-out menu drawer with Recent activity, Appearance (Light or Dark mode, remembered on the phone), Admin settings and Sign out.
+- Admin settings: business profile, currency symbol, default low-stock threshold (with Apply to all items), CSV export of sales and items, team, photo scan key, and data reset.
+- Inventory is now a card grid (2 columns on phones, 3 to 4 on larger screens) showing name and unit, large stock number, status pill, price and one-tap + / - buttons. A button at the top switches to list view and remembers the choice.
+- Status label "Healthy" is now "In Stock".
+
 ## 1.4.0 (23 Nov 2026)
 - Editable sales: tap a sale in the Reports sales log, then Edit sale. Change quantities, remove items or add items. Stock and totals update automatically, and edits that need more stock than available are blocked with a message.
 - Edited sales show an "Edited" badge, the edit time, who edited and the original total.

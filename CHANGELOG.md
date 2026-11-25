@@ -2,6 +2,21 @@
 
 Each update raises the version number. The version is shown at the bottom of the sign-in screen and the Dashboard. To release an update: change `APP_VERSION` and `APP_DATE` at the top of the script in `pages/index.html`, add a line here, and upload the file.
 
+## 1.10.0 (25 Nov 2026)
+- Data Entry now lives inside Inventory. A + Data Entry button on the Inventory screen opens it as a popup, the same way + Log sale works. It keeps the two tap-to-open sections (Add Stock by Hand, View / Manage Items) and the photo scan button.
+- Cancel on a stock confirmation returns to the Data Entry popup with your entries kept. Saving or deleting an item returns you to the items list.
+- The bottom bar now has Dashboard, Inventory, Reports (admins) and Credits. Credits / Utang replaced the Data Entry tab. The Dashboard credits card opens the same tab, and the menu no longer lists it.
+- Fixed a missing icon for the Reports tab.
+
+## 1.9.0 (24 Nov 2026)
+- Customer credit (Utang): Log Sale has a Payment Status selector (Paid, Partial, Credit / Utang). Partial and credit sales ask for a customer name (with quick-pick of past customers) and an optional phone or note. Partial shows Amount Paid Now and the Remaining Balance Due as you type. The Confirm Sale popup shows status, customer, amount paid and balance.
+- Customer Credits screen (Dashboard card or menu): total uncollected, customers grouped with what they owe, item and payment history, and + Record Payment (with confirmation) for installments or paying the full balance. Credit receipts in the sales log show the balance and a Record Payment button.
+- Profit and margin: each sale stores the item cost at the time. Dashboard and Reports show gross profit and margin %, and separate Cash collected from Credit / Utang sales. Product confirmations warn if no cost price was entered.
+- Stock adjustment reasons: lowering stock by hand (the - button, a recount in Data Entry, or lowering stock in the item form) needs a reason: Stock Count Correction, Damaged / Broken, Expired or Personal / Sample Use. It is shown in Recent Activity as an Adjustment.
+- Owner PIN lock (Admin settings): a 4-digit PIN is asked before showing costs and profit, editing or voiding sales, adjusting stock by hand, or opening Admin settings. It stays unlocked for 5 minutes. A sign-in PIN can turn it off if the owner PIN is forgotten.
+- Export reports (Admin settings): Sales & Credits Report (.csv), Current Inventory (.pdf), Recent Activity Log (.pdf), plus an items backup (.csv).
+- Sample data now includes a few credit sales.
+
 ## 1.8.0 (24 Nov 2026)
 - Data Entry opens clean. Two large buttons, + Add Stock by Hand and View / Manage Items, expand their sections on tap and collapse again on a second tap or Cancel / Close. The stock confirmation before saving is unchanged.
 - Log Sale now starts with a search box. Typing filters items instantly by name, size or unit (for example 500 ml or pack), SKU and category, ignoring capitals.
